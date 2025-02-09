@@ -48,9 +48,35 @@ export default async function handler(req, res) {
         'INSERT INTO emails (firstName, lastName, email) VALUES ($1, $2, $3) RETURNING *',
         [firstName, lastName, email]
       );
+      // ✅ Send an email confirmation
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sendEmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Thank You for Joining the Waitlist!',
+          text: `Dear ${firstName},
+  
+  Thank you for signing up for our waitlist! We’re excited to have you on board and appreciate your interest in ConcerTrack.
+  
+  Stay tuned for future announcements, including updates on our progress and the official launch date. We can't wait to share more with you soon!
+  
+  If you have any questions or feedback, feel free to reply directly to me at kevin.nguyen9703@gmail.com.
+  
+  Best regards,  
+  Kevin Nguyen`,
+          html: `<p>Dear ${firstName},</p>
+                   <p>Thank you for signing up for our waitlist! We’re excited to have you on board and appreciate your interest in <strong>ConcertTrack</strong>.</p>
+                   <p>Stay tuned for future announcements, including updates on our progress and the official launch date. We can't wait to share more with you soon!</p>
+                   <p>If you have any questions or feedback, feel free to email me directly at kevin.nguyen9703@gmail.com.</p>
+                   <p>Best regards,<br><strong>Kevin Nguyen</strong></p>`,
+        }),
+      });
 
       res.status(200).json({
-        message: 'Successfully added to waitlist',
+        message: 'Successfully added to waitlist and email sent',
         user: result.rows[0],
       });
     } catch (err) {
