@@ -8,15 +8,15 @@ export default async function handler(req, res) {
   const { to, subject, text, html } = req.body;
 
   let transporter = nodemailer.createTransport({
-    service: 'Zoho', // Or use 'gmail' or other services
+    service: 'Zoho', 
     auth: {
-      user: process.env.SMTP_USER, // Your Zoho email
-      pass: process.env.SMTP_PASSWORD, // Your Zoho email password
+      user: process.env.SMTP_USER, 
+      pass: process.env.SMTP_PASSWORD, 
     },
   });
 
   const mailOptions = {
-    from: process.env.SMTP_FROM_EMAIL, // Verified email address
+    from: process.env.SMTP_FROM_EMAIL, 
     to,
     subject,
     text,
