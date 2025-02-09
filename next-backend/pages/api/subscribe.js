@@ -1,7 +1,7 @@
 import pool from '../../lib/db'; // Import the database connection
 import Cors from 'cors';
 import initMiddleware from '../../lib/init-middleware';
-import jwt from 'jsonwebtoken';
+import authenticateToken from '../../lib/authMiddleware'; // ✅ Import the auth middleware
 
 // Initialize the cors middleware
 const cors = initMiddleware(
@@ -10,22 +10,6 @@ const cors = initMiddleware(
     origin: process.env.CORS_ORIGIN,
   })
 );
-
-// Middleware to check JWT token
-function authenticateToken(req, res) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Unauthorized - No token provided' });
-  }
-
-  const token = authHeader.split(' ')[1]; // Bearer TOKEN
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user data to request
-  } catch (err) {
-    return res.status(403).json({ error: 'Forbidden - Invalid token' });
-  }
-}
 
 export default async function handler(req, res) {
   // Run cors middleware
@@ -48,6 +32,7 @@ export default async function handler(req, res) {
         'INSERT INTO emails (firstName, lastName, email) VALUES ($1, $2, $3) RETURNING *',
         [firstName, lastName, email]
       );
+
       // ✅ Send an email confirmation
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sendEmail`, {
         method: 'POST',
@@ -58,13 +43,13 @@ export default async function handler(req, res) {
           to: email,
           subject: 'Thank You for Joining the Waitlist!',
           text: `Dear ${firstName},
-  
-  Thank you for signing up for our waitlist! We’re excited to have you on board and appreciate your interest in ConcerTrack.
-  
+
+  Thank you for signing up for our waitlist! We’re excited to have you on board and appreciate your interest in ConcertTrack.
+
   Stay tuned for future announcements, including updates on our progress and the official launch date. We can't wait to share more with you soon!
-  
+
   If you have any questions or feedback, feel free to reply directly to me at kevin.nguyen9703@gmail.com.
-  
+
   Best regards,  
   Kevin Nguyen`,
           html: `<p>Dear ${firstName},</p>
