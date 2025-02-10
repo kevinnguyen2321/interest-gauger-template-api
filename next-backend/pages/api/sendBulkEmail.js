@@ -37,7 +37,8 @@ export default async function handler(req, res) {
 
     const mailOptions = {
       from: process.env.SMTP_FROM_EMAIL,
-      to: emailList.join(','),
+      to: process.env.SMTP_FROM_EMAIL,
+      bcc: emailList.join(','),
       subject,
       text,
       html,
