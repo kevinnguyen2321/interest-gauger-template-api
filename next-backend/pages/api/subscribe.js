@@ -3,14 +3,6 @@ import Cors from 'cors';
 import initMiddleware from '../../lib/init-middleware';
 import authenticateToken from '../../lib/authMiddleware'; // ✅ Import the auth middleware
 
-// Initialize the cors middleware
-// const cors = initMiddleware(
-//   Cors({
-//     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-//     origin: process.env.CORS_ORIGIN,
-//   })
-// );
-
 const allowedOrigins = [
   'https://jointhewaitlist.netlify.app',
   'http://localhost:5173',
@@ -18,7 +10,7 @@ const allowedOrigins = [
 
 const cors = initMiddleware(
   Cors({
-    methods: ['POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, origin); // ✅ Allow if origin is in the list
