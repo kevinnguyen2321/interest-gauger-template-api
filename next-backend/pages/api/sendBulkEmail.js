@@ -1,8 +1,26 @@
 import nodemailer from 'nodemailer';
 import pool from '../../lib/db'; // Your database connection
 import authenticateToken from '../../lib/authMiddleware'; // JWT auth middleware
+import Cors from 'cors';
+import initMiddleware from '../../lib/init-middleware';
+
+// Initialize the CORS middleware
+const cors = initMiddleware(
+  Cors({
+    methods: ['POST', 'OPTIONS'],
+    origin: process.env.CORS_ORIGIN, // Uses your env variable
+  })
+);
 
 export default async function handler(req, res) {
+  // Run CORS middleware
+  await cors(req, res);
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
